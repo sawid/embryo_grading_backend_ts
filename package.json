@@ -1,0 +1,33 @@
+{
+  "name": "ocrdata",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "start:dev": "node -r dotenv/config src/server.ts",
+    "start:watch": "nodemon -r dotenv/config src/server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "joi": "^17.8.3",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.10.0",
+    "morgan": "^1.10.0",
+    "node-tesseract-ocr": "^2.2.1",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.14.1",
+    "dotenv": "^16.0.3",
+    "typescript": "^4.9.5"
+  }
+}
