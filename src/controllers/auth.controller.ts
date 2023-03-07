@@ -9,6 +9,20 @@ export const testHello = (req: any, res: any): any => {
   return res.send("Gello")
 }
 
+// test api
+export const currentUser = async (req: any, res: any) => {
+  try {
+    const user = await User.findOne({ _id: req.id })
+      .select('-password').exec()
+    console.log(user);
+    return res.send(user);
+
+  } catch (error: any) {
+    console.log(error.message)
+    return res.status(500).send(error.message);
+  }
+}
+
 // register user
 export const registerUser = async (req: any, res: any) => {
   try {
@@ -37,9 +51,9 @@ export const registerUser = async (req: any, res: any) => {
       password: user.password,
       isVerify: false,
     })
-    
+
     await user.save();
-    
+
     return res.send("S");
   } catch (error: any) {
     console.log(error.message)
