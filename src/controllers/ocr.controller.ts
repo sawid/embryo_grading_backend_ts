@@ -32,7 +32,7 @@ export const matchData = async (req: any, res: any) => {
             return res.status(400).send("This grade is not existed");
         }
 
-        grade = await Grade.findOneAndUpdate({ imageId: req.body.imageId, imageName: req.body.imageName}, { grade: req.body.grade })
+        grade = await Grade.findOneAndUpdate({ imageId: req.body.imageId}, { imageName: req.body.imageName, grade: req.body.grade })
 
         return res.send("Match Success");
     } catch (error: any) {
