@@ -106,7 +106,7 @@ export const getEmbryoList = async (req: Request, res: Response) => {
     const searchStr = req.query.search as string; // Assuming the search string is passed as a query parameter
     const directoryPath = '../test_image_set'; // Replace with the actual path
 
-    var searchResult = searchDirectories(directoryPath, searchStr);
+    var searchResult = await searchDirectories(directoryPath, searchStr);
     
     console.log(`Found ${searchResult.length} directories containing '${searchStr}':`);
     console.log(searchResult);
@@ -118,12 +118,12 @@ export const getEmbryoList = async (req: Request, res: Response) => {
     }
 }
 
-const searchDirectories = (directoryPath: string, searchStr: string): any[] => {
+const searchDirectories = async (directoryPath: string, searchStr: string): Promise<any[]> => {
   const result: any[] = [];
 
   const files = fs.readdirSync(directoryPath);
 
-  files.forEach((file: string) => {
+  for (const file of files) {
     const filePath = path.join(directoryPath, file);
     const stats = fs.statSync(filePath);
 
@@ -131,58 +131,67 @@ const searchDirectories = (directoryPath: string, searchStr: string): any[] => {
       // Check if the directory name contains the search string
       if (file.includes(searchStr) && filePath.split("/").length >= 5) {
         const parts = filePath.split('/');
-        console.log(parts)
         const professor = parts[2];
         const year = parts[3];
         const patient_name = parts[4];
 
+        let image_name_data = await searchFiles(filePath, "");
         result.push({
           professor,
           year,
           patient_name,
-          image_name: searchFiles(filePath, ""),
+          image_name: image_name_data,
         });
-
-        
       }
 
       // Recursively search subdirectories
-      const subDirectories = searchDirectories(filePath, searchStr);
+      const subDirectories = await searchDirectories(filePath, searchStr);
       result.push(...subDirectories);
     }
-  });
+  }
 
   return result;
 };
 
 
-const searchFiles = (directoryPath: string, searchStr: string): any[] => {
-    const result: any[] = [];
-    const validExtensions = ['.jpg', '.png', '.jpeg'];
-    const files = fs.readdirSync(directoryPath);
-  
-    files.forEach((file: string) => {
-      const filePath = path.join(directoryPath, file);
-      const stats = fs.statSync(filePath);
-  
-      if (stats.isDirectory()) {
-        // Recursively search subdirectories
-        const subFiles = searchFiles(filePath, searchStr);
-        result.push(...subFiles);
-      } else {
-        const extension = path.extname(file).toLowerCase();
+
+const searchFiles = async (directoryPath: string, searchStr: string): Promise<any[]> => {
+  const result: any[] = [];
+  const validExtensions = ['.jpg', '.png', '.jpeg'];
+  const files = fs.readdirSync(directoryPath);
+
+  for (const file of files) {
+    const filePath = path.join(directoryPath, file);
+    const stats = fs.statSync(filePath);
+
+    if (stats.isDirectory()) {
+      // Recursively search subdirectories
+      const subFiles = await searchFiles(filePath, searchStr);
+      result.push(...subFiles);
+    } else {
+      const extension = path.extname(file).toLowerCase();
       // Check if the file has a valid extension (jpg or png) and if the file name contains the search string
       if (validExtensions.includes(extension) && file.includes(searchStr)) {
-        var data = {
-          filePath : filePath,
-          grade : null
+        try {
+          const queryResult = await Grade.findOne({ imageName: filePath });
+          if (queryResult) {
+            result.push({
+              filePath: filePath,
+              grade: queryResult.grade.toString(),
+            });
+          } else {
+            result.push({
+              filePath: filePath,
+              grade: "null",
+            });
+          }
+        } catch (error) {
+          console.error(`Error fetching grade for ${filePath}: ${error}`);
         }
-        
-        result.push(data);
       }
-      }
-    });
-    
-  
-    return result;
-  };
+    }
+  }
+
+  console.log(result);
+  return result;
+};
