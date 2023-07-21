@@ -5,6 +5,7 @@ const morgan = require("morgan");
 require("dotenv").config();
 const { readdirSync } = require("fs");
 const path = require('path');
+const fs = require('fs');
 import { connectDatabase } from "./configs/connectDatabase";
 
 const app = express();
