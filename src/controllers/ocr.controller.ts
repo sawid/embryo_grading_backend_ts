@@ -118,6 +118,21 @@ export const getEmbryoList = async (req: Request, res: Response) => {
     }
 }
 
+export const insertOrUpdateGrade = async (req: Request, res: Response): Promise<any> => {
+
+  try {
+    await Grade.findOneAndUpdate(
+      { imageName: req.body.imageName },
+      { $set: { grade: req.body.grade } },
+      { upsert: true }
+    );
+    return res.send("Success");
+  } catch (error) {
+    console.error(`Error inserting/updating grade for ${req.body.imageName}: ${error}`);
+    return res.status(500).send(error);
+  } 
+};
+
 const searchDirectories = async (directoryPath: string, searchStr: string): Promise<any[]> => {
   const result: any[] = [];
 
@@ -182,7 +197,7 @@ const searchFiles = async (directoryPath: string, searchStr: string): Promise<an
           } else {
             result.push({
               filePath: filePath,
-              grade: "null",
+              grade: "None",
             });
           }
         } catch (error) {

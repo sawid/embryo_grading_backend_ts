@@ -12,6 +12,14 @@ const app = express();
 
 connectDatabase();
 
+// Replace '../test_image_set' with the path to your folder that you want to serve
+const folderToServe = path.join(__dirname, '../test_image_set');
+
+console.log(folderToServe);
+
+// Serve static files from the specified folder
+app.use('/files', express.static(folderToServe));
+
 app.use(morgan("dev"));
 app.use(bodyParser.json({ limit: "20mb" }));
 app.use(cors());
