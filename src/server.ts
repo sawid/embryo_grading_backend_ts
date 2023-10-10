@@ -8,6 +8,11 @@ const path = require('path');
 const fs = require('fs');
 import { connectDatabase } from "./configs/connectDatabase";
 
+const corsOptions = {
+  origin: ['https://deb3-2403-6200-88a0-9d27-3cc6-b8f-a140-c644.ngrok-free.app', 'http://localhost:3232', 'http://localhost:3000', 'https://ocr-frontend-f6a21.web.app'], // Add your ngrok URL and any other allowed origins
+  optionsSuccessStatus: 200,
+};
+
 const app = express();
 
 connectDatabase();
@@ -22,7 +27,7 @@ app.use('/files', express.static(folderToServe));
 
 app.use(morgan("dev"));
 app.use(bodyParser.json({ limit: "20mb" }));
-app.use(cors());
+app.use(cors(corsOptions));
 
 readdirSync(path.resolve(__dirname, './routes')).map((r: any) => app.use("/api", require("./routes/" + r)));
 

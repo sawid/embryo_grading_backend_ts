@@ -141,6 +141,7 @@ const searchDirectories = async (directoryPath: string, searchStr: string): Prom
   for (const file of files) {
     const filePath = path.join(directoryPath, file);
     const stats = fs.statSync(filePath);
+    console.log(filePath)
 
     if (stats.isDirectory()) {
       // Check if the directory name contains the search string
