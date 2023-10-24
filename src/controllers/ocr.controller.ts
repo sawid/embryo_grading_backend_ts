@@ -3,6 +3,7 @@ import { validateCreateData, validateMatchData } from "../services/ocr.validator
 const fs = require('fs');
 import path from 'path';
 import express, { Request, Response } from 'express';
+import * as fst from 'fs';
 // Check Status Data is Valid
 export const imageIdIsValid = async (req: any, res: any) => {
     const imageId = req.params.imageId;
@@ -211,3 +212,50 @@ const searchFiles = async (directoryPath: string, searchStr: string): Promise<an
   console.log(result);
   return result;
 };
+
+export const getFiles = async (req: Request, res: Response): Promise<any> => {
+  const result: string = "Succession";
+  try {
+    const data = await Grade.find(
+    );
+    // console.log(data)
+    data.forEach(item => {
+      const sourceFilePath = path.resolve(__dirname, "../", item.imageName.toString());
+      const destinationFilePath = path.resolve(__dirname, "../../export/", item.grade.toString());
+      // Check if the destination directory exists, if not, create it
+      if (!fs.existsSync(destinationFilePath)) {
+        fs.mkdirSync(destinationFilePath, { recursive: true });
+      }
+      try {
+        console.log(sourceFilePath)
+        console.log(destinationFilePath)
+        copyFileAsync(sourceFilePath, destinationFilePath, item._id.toString() + ".jpg");
+        console.log('File copied successfully!');
+      } catch (error) {
+        console.error('Error copying file:', error);
+    }
+    ;
+    })
+    
+    res.send(data);
+  } catch (error) {
+    console.log(error)
+    console.log("Error To Export")
+  }
+  return result;
+}
+
+
+async function copyFileAsync(sourcePath: string, destinationDirectory: string, newFileName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+      const destinationPath = path.resolve(destinationDirectory, newFileName);
+
+      fs.copyFile(sourcePath, destinationPath, (err: any) => {
+          if (err) {
+              reject(`Error copying file: ${err}`);
+          } else {
+              resolve();
+          }
+      });
+  });
+}

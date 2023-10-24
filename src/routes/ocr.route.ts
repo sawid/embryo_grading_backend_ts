@@ -1,4 +1,4 @@
-import { createData, getEmbryoList, getProfessorList, imageIdIsValid, insertOrUpdateGrade, matchData } from "../controllers/ocr.controller";
+import { createData, getEmbryoList, getFiles, getProfessorList, imageIdIsValid, insertOrUpdateGrade, matchData } from "../controllers/ocr.controller";
 import { auth } from "../middlewares/auth.middleware";
 
 const express = require("express");
@@ -14,5 +14,7 @@ router.get('/data/get-professor-list', auth, getProfessorList);
 
 router.post('/data/search', auth, getEmbryoList);
 
+// Export File
+router.get('/data/exportdata', auth, getFiles) 
 
 module.exports = router;
